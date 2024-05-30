@@ -2,18 +2,6 @@
 #include <stdlib.h>
 #include "stack.h"
 
-struct node
-{
-    char data;
-    struct node *next;
-};
-
-struct stack
-{
-    struct node *top;
-    int size;
-};
-
 void push(struct stack *const stack, char data)
 {
     struct node *new = (struct node *)malloc(sizeof(struct node));
@@ -51,10 +39,10 @@ int is_empty(struct stack *const stack)
 
 char peek(struct stack *const stack)
 {
-    return stack->top->data;
+    return stack->top == NULL ? -1 : stack->top->data;
 }
 
-static void free_stack(struct stack *const stack)
+void free_stack(struct stack *const stack)
 {
     struct node *tmp = stack->top;
 
