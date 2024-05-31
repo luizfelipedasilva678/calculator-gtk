@@ -1,11 +1,8 @@
 #ifndef __PARSER_H__
 #define __PARSER_H__
 
-const int CARET = 3;
-const int ASTERISK = 2;
-const int SLASH = 2;
-const int MINUS = 2;
-const int PLUS = 2;
+const int ASTERISK_AND_SLASH_PRECENDENCE = 2;
+const int MINUS_AND_PLUS_PRECENDENCE = 1;
 
 int resolve(char *);
 

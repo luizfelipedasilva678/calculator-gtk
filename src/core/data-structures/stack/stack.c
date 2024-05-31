@@ -24,11 +24,16 @@ void push(struct stack *const stack, char data)
 char pop(struct stack *const stack)
 {
     struct node *tmp = stack->top;
+
+    if (tmp == NULL)
+        return '\0';
+
     char data = tmp->data;
     stack->top = stack->top->next;
     free(tmp);
 
     stack->size--;
+
     return data;
 }
 
@@ -39,7 +44,7 @@ int is_empty(struct stack *const stack)
 
 char peek(struct stack *const stack)
 {
-    return stack->top == NULL ? -1 : stack->top->data;
+    return stack->top == NULL ? '\0' : stack->top->data;
 }
 
 void free_stack(struct stack *const stack)
