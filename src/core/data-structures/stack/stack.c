@@ -1,61 +1,87 @@
 #include <stdio.h>
-#include <stdlib.h>
+#include <string.h>
 #include "stack.h"
 
-void push(struct stack *const stack, char data)
+struct stack *stack_init(size_t type_size, void(onerror)(void))
 {
-    struct node *new = (struct node *)malloc(sizeof(struct node));
-    new->data = data;
-    new->next = NULL;
+    struct stack *stack = (struct stack *)malloc(sizeof(struct stack *));
+
+    if (!stack)
+        onerror();
+
+    stack->top = NULL;
+    stack->size = 0;
+    stack->type_size = type_size;
+
+    return stack;
+}
+
+void push(struct stack *stack, void *data, void(onerror)(void))
+{
+    struct node *node = (struct node *)malloc(sizeof(struct node));
+    node->data = malloc(stack->type_size);
+
+    if (!node || !node->data)
+        onerror();
+
+    memcpy(node->data, data, stack->type_size);
+    node->next = stack->top;
 
     if (stack->top == NULL)
     {
-        stack->top = new;
+        stack->top = node;
     }
     else
     {
-        new->next = stack->top;
-        stack->top = new;
+        node->next = stack->top;
+        stack->top = node;
     }
 
     stack->size++;
 }
 
-char pop(struct stack *const stack)
+void *pop(struct stack *stack)
 {
-    struct node *tmp = stack->top;
+    struct node *node = stack->top;
+    void *data = NULL;
 
-    if (tmp == NULL)
-        return '\0';
+    if (node == NULL)
+        return NULL;
 
-    char data = tmp->data;
-    stack->top = stack->top->next;
-    free(tmp);
+    stack->top = node->next;
+    data = node->data;
+    free(node);
 
     stack->size--;
 
     return data;
 }
 
-int is_empty(struct stack *const stack)
+void *peek(struct stack *stack)
 {
-    return stack->size == 0;
+    struct node *node = stack->top;
+
+    if (node == NULL)
+        return NULL;
+
+    return node->data;
 }
 
-char peek(struct stack *const stack)
+uint8_t is_empty(struct stack *stack)
 {
-    return stack->top == NULL ? '\0' : stack->top->data;
+    return stack->top == NULL;
 }
 
-void free_stack(struct stack *const stack)
+void clear_stack(struct stack *stack)
 {
-    struct node *tmp = stack->top;
+    struct node *node = stack->top;
 
-    while (tmp != NULL)
+    while (node != NULL)
     {
-        struct node *next = tmp->next;
-        free(tmp);
-        tmp = next;
+        struct node *next = node->next;
+        free(node->data);
+        free(node);
+        node = next;
     }
 
     free(stack);
