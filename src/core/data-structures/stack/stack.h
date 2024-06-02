@@ -4,14 +4,12 @@
 #include <inttypes.h>
 #include <stdlib.h>
 
-struct node
-{
+struct node {
     void *data;
     struct node *next;
 };
 
-struct stack
-{
+struct stack {
     struct node *top;
     uint32_t size;
     uint32_t type_size;
