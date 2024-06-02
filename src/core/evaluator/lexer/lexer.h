@@ -11,11 +11,11 @@ struct token {
     char value[50];
 };
 
-struct lexer_result {
+struct tokenizer_result {
     struct token *tokens;
     size_t quantity;
 };
 
-struct lexer_result get_tokens(char *input);
+struct tokenizer_result tokenize_input(char *input);
 
 #endif

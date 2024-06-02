@@ -12,12 +12,13 @@ static uint8_t is_operator(char c) {
 
 static uint8_t is_parenthesis(char c) { return c == '(' || c == ')'; }
 
-static void push_token(struct lexer_result* lexer_result, struct token token) {
-    lexer_result->tokens[lexer_result->quantity] = token;
-    lexer_result->quantity++;
+static void push_token(struct tokenizer_result* tokenizer_result,
+                       struct token token) {
+    tokenizer_result->tokens[tokenizer_result->quantity] = token;
+    tokenizer_result->quantity++;
 }
 
-static void make_number(struct lexer_result* lexer_result, char* input,
+static void make_number(struct tokenizer_result* tokenizer_result, char* input,
                         size_t* idx_input, size_t input_len) {
     size_t idx = 0;
     struct token token = {NUMBER, ""};
@@ -29,11 +30,11 @@ static void make_number(struct lexer_result* lexer_result, char* input,
         (*idx_input)++;
     }
 
-    push_token(lexer_result, token);
+    push_token(tokenizer_result, token);
 }
 
-static void make_operator(struct lexer_result* lexer_result, char* input,
-                          size_t* idx_input, size_t input_len) {
+static void make_operator(struct tokenizer_result* tokenizer_result,
+                          char* input, size_t* idx_input, size_t input_len) {
     struct token token = {OPERATOR, ""};
 
     switch (input[*idx_input]) {
@@ -64,21 +65,21 @@ static void make_operator(struct lexer_result* lexer_result, char* input,
         }
     }
 
-    push_token(lexer_result, token);
+    push_token(tokenizer_result, token);
     (*idx_input)++;
 }
 
-static void make_parenthesis(struct lexer_result* lexer_result,
+static void make_parenthesis(struct tokenizer_result* tokenizer_result,
                              char parenthesis, size_t* idx_input) {
     switch (parenthesis) {
         case '(': {
             struct token token = {LEFT_PARENTHESIS, "("};
-            push_token(lexer_result, token);
+            push_token(tokenizer_result, token);
             break;
         }
         case ')': {
             struct token token = {RIGHT_PARENTHESIS, ")"};
-            push_token(lexer_result, token);
+            push_token(tokenizer_result, token);
             break;
         } break;
     }
@@ -86,7 +87,7 @@ static void make_parenthesis(struct lexer_result* lexer_result,
     (*idx_input)++;
 }
 
-static void tokenize(struct lexer_result* lexer_result, char* input) {
+static void tokenize(struct tokenizer_result* tokenizer_result, char* input) {
     size_t idx_input, input_len;
 
     input_len = strlen(input);
@@ -94,17 +95,17 @@ static void tokenize(struct lexer_result* lexer_result, char* input) {
 
     while (idx_input < input_len) {
         if (is_digit(input[idx_input])) {
-            make_number(lexer_result, input, &idx_input, input_len);
+            make_number(tokenizer_result, input, &idx_input, input_len);
             continue;
         }
 
         if (is_operator(input[idx_input])) {
-            make_operator(lexer_result, input, &idx_input, input_len);
+            make_operator(tokenizer_result, input, &idx_input, input_len);
             continue;
         }
 
         if (is_parenthesis(input[idx_input])) {
-            make_parenthesis(lexer_result, input[idx_input], &idx_input);
+            make_parenthesis(tokenizer_result, input[idx_input], &idx_input);
             continue;
         }
 
@@ -112,24 +113,39 @@ static void tokenize(struct lexer_result* lexer_result, char* input) {
     }
 }
 
-struct lexer_result get_tokens(char* input) {
+static char* remove_whitespaces(char* input) {
     size_t length = strlen(input);
-    struct lexer_result lexer_result = {NULL, 0};
-    lexer_result.quantity = 0;
-    lexer_result.tokens = (struct token*)malloc(sizeof(struct token) * length);
+    char *new_input, *ptr1, *ptr2;
 
-    tokenize(&lexer_result, input);
+    new_input = (char*)malloc(length + 1 * sizeof(char));
+    ptr1 = input;
+    ptr2 = new_input;
 
-    return lexer_result;
+    while (*ptr1) {
+        if (*ptr1 != ' ') {
+            *ptr2 = *ptr1;
+            ptr2++;
+        }
+        ptr1++;
+    }
+    *ptr2 = '\0';
+
+    return new_input;
 }
 
-int main(void) {
-    struct lexer_result lexer_result = get_tokens("22+22.000+(2 + 3)");
+struct tokenizer_result tokenize_input(char* input) {
+    size_t length;
+    char* clean_input;
+    struct tokenizer_result tokenizer_result = {NULL, 0};
 
-    for (int i = 0; i < lexer_result.quantity; i++) {
-        printf("%s\n", lexer_result.tokens[i].value);
-    }
+    clean_input = remove_whitespaces(input);
+    length = strlen(clean_input);
+    tokenizer_result.quantity = 0;
+    tokenizer_result.tokens =
+        (struct token*)malloc(sizeof(struct token) * length);
 
-    free(lexer_result.tokens);
-    return 0;
+    tokenize(&tokenizer_result, clean_input);
+    free(clean_input);
+
+    return tokenizer_result;
 }
