@@ -1,6 +1,9 @@
 #ifndef __LEXER_H__
 #define __LEXER_H__
 
+#include <stdlib.h>
+#include <inttypes.h>
+
 #define NUMBER 0
 #define OPERATOR 1
 #define LEFT_PARENTHESIS 2

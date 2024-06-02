@@ -1,0 +1,6 @@
+{
+  "files.associations": {
+    "*.css": "postcss",
+    "stdlib.h": "c"
+  }
+}
