@@ -1,13 +1,23 @@
 #include <stdio.h>
 #include "parser.h"
+#include "../lexer/lexer.h"
 #include "../data-structures/stack/stack.h"
 
-void parse(char *input) {
-    struct tokenizer_result tokenizer_result = tokenize_input(input);
+STACK(struct token);
 
-    for (int i = 0; i < tokenizer_result.quantity; i++) {
-        printf("%s\n", tokenizer_result.tokens[i].value);
+void parse(char *input) {
+    struct stack stack;
+    stack_init(&stack);
+
+    struct stack_action_result result = peek(&stack);
+
+    printf("%lu \n", stack.size);
+
+    if (!result.error) {
+        printf("%d\n", result.data);
     }
+
+    clear_stack(&stack);
 }
 
 int main(void) {
