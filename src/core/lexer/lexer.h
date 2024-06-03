@@ -11,7 +11,7 @@
 
 struct token {
     uint8_t type;
-    char value[50];
+    char *value;
 };
 
 struct tokenizer_result {
@@ -19,6 +19,6 @@ struct tokenizer_result {
     size_t quantity;
 };
 
-struct tokenizer_result tokenize_input(char *input);
+struct tokenizer_result *tokenize_input(char *input);
 
 #endif

@@ -16,10 +16,25 @@ static void push_token(struct tokenizer_result* tokenizer_result,
     tokenizer_result->quantity++;
 }
 
+static size_t count_digits(char* number, size_t start, size_t end) {
+    size_t count, i;
+
+    count = 0;
+    for (i = start; i < end && (is_digit(number[i]) || number[i] == '.'); i++) {
+        count++;
+    }
+
+    return count;
+}
+
 static void make_number(struct tokenizer_result* tokenizer_result, char* input,
                         size_t* idx_input, size_t input_len) {
     size_t idx = 0;
-    struct token token = {NUMBER, ""};
+
+    struct token token;
+    token.type = NUMBER;
+    token.value = (char*)malloc(
+        count_digits(input, *idx_input, input_len) * sizeof(char) + 1);
 
     while (*idx_input < input_len &&
            (is_digit(input[*idx_input]) || input[*idx_input] == '.')) {
@@ -27,13 +42,16 @@ static void make_number(struct tokenizer_result* tokenizer_result, char* input,
         idx++;
         (*idx_input)++;
     }
-
+    token.value[idx] = '\0';
     push_token(tokenizer_result, token);
 }
 
 static void make_operator(struct tokenizer_result* tokenizer_result,
                           char* input, size_t* idx_input, size_t input_len) {
-    struct token token = {OPERATOR, ""};
+    struct token token;
+    token.type = OPERATOR;
+    token.value = (char*)malloc(2 * sizeof(char));
+    token.value[1] = '\0';
 
     switch (input[*idx_input]) {
         case '+': {
@@ -69,14 +87,20 @@ static void make_operator(struct tokenizer_result* tokenizer_result,
 
 static void make_parenthesis(struct tokenizer_result* tokenizer_result,
                              char parenthesis, size_t* idx_input) {
+    struct token token;
+    token.value = (char*)malloc(2 * sizeof(char));
+    token.value[1] = '\0';
+
     switch (parenthesis) {
         case '(': {
-            struct token token = {LEFT_PARENTHESIS, "("};
+            token.type = LEFT_PARENTHESIS;
+            token.value[0] = '(';
             push_token(tokenizer_result, token);
             break;
         }
         case ')': {
-            struct token token = {RIGHT_PARENTHESIS, ")"};
+            token.type = RIGHT_PARENTHESIS;
+            token.value[0] = ')';
             push_token(tokenizer_result, token);
             break;
         } break;
@@ -115,7 +139,7 @@ static char* remove_whitespaces(char* input) {
     size_t length = strlen(input);
     char *new_input, *ptr1, *ptr2;
 
-    new_input = (char*)malloc(length + 1 * sizeof(char));
+    new_input = (char*)malloc(length * sizeof(char) + 1);
     ptr1 = input;
     ptr2 = new_input;
 
@@ -131,18 +155,19 @@ static char* remove_whitespaces(char* input) {
     return new_input;
 }
 
-struct tokenizer_result tokenize_input(char* input) {
+struct tokenizer_result* tokenize_input(char* input) {
     size_t length;
     char* clean_input;
-    struct tokenizer_result tokenizer_result = {NULL, 0};
+    struct tokenizer_result* tokenizer_result =
+        (struct tokenizer_result*)malloc(sizeof(struct tokenizer_result));
 
     clean_input = remove_whitespaces(input);
     length = strlen(clean_input);
-    tokenizer_result.quantity = 0;
-    tokenizer_result.tokens =
+    tokenizer_result->quantity = 0;
+    tokenizer_result->tokens =
         (struct token*)malloc(sizeof(struct token) * length);
 
-    tokenize(&tokenizer_result, clean_input);
+    tokenize(tokenizer_result, clean_input);
     free(clean_input);
 
     return tokenizer_result;
