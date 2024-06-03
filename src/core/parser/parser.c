@@ -77,7 +77,7 @@ struct parser_result *parse(char *input) {
     struct token_stack_action_result pop_result;
     struct token_stack stack;
 
-    token_stack_init(&stack);
+    token_stack_init(&stack, sizeof(struct token_stack_node));
 
     parser_result =
         (struct parser_result *)malloc(sizeof(struct parser_result));
