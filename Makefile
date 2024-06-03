@@ -1,8 +1,11 @@
 C = gcc
 FLAGS = 
 
-program.out: lexer.o parser.o
-	$(C) $(FLAGS) ./obj/lexer.o ./obj/parser.o -o ./build/program.out
+program.out: lexer.o parser.o 
+	$(C) $(FLAGS) ./obj/lexer.o ./obj/parser.o  -o ./build/program.out
+
+evaluator.o: ./src/core/evaluator/evaluator.c
+	$(C) $(FLAGS) -c -ggdb3 ./src/core/evaluator/evaluator.c -o ./obj/evaluator.o
 
 lexer.o: ./src/core/lexer/lexer.c 
 	$(C) $(FLAGS) -c -ggdb3 ./src/core/lexer/lexer.c -o ./obj/lexer.o

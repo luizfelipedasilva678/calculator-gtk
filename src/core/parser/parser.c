@@ -3,7 +3,7 @@
 #include "../lexer/lexer.h"
 #include "../data-structures/stack/stack.h"
 
-STACK(struct token);
+STACK(token, struct token);
 
 static uint8_t operator_precedence(char operator) {
     if (operator== '+' || operator== '-') {
@@ -31,8 +31,8 @@ void push_token(struct parser_result *parser_result, struct token token) {
 }
 
 static void handle_operator(struct parser_result *parser_result,
-                            struct stack *stack, struct token operator) {
-    struct stack_action_result peek_result = peek(stack);
+                            struct token_stack *stack, struct token operator) {
+    struct token_stack_action_result peek_result = token_stack_peek(stack);
 
     while (peek_result.error == 0 && peek_result.data.type == OPERATOR) {
         if ((operator_associativity(operator.value[0]) == LEFT_ASSOCIATIVITY &&
@@ -41,28 +41,29 @@ static void handle_operator(struct parser_result *parser_result,
             (operator_associativity(operator.value[0]) == RIGHT_ASSOCIATIVITY &&
              operator_precedence(operator.value[0]) <
                  operator_precedence(peek_result.data.value[0]))) {
-            push_token(parser_result, pop(stack).data);
+            push_token(parser_result, token_stack_pop(stack).data);
         } else {
             break;
         }
 
-        peek_result = peek(stack);
+        peek_result = token_stack_peek(stack);
     }
 
-    push(stack, operator, NULL);
+    token_stack_push(stack, operator, NULL);
 }
 
 static void handle_parenthesis(struct parser_result *parser_result,
-                               struct stack *stack, struct token parenthesis) {
+                               struct token_stack *stack,
+                               struct token parenthesis) {
     if (parenthesis.value[0] == '(') {
-        push(stack, parenthesis, NULL);
+        token_stack_push(stack, parenthesis, NULL);
     } else {
-        struct stack_action_result pop_result = pop(stack);
+        struct token_stack_action_result pop_result = token_stack_pop(stack);
 
         while (pop_result.error == 0 &&
                pop_result.data.type != LEFT_PARENTHESIS) {
             push_token(parser_result, pop_result.data);
-            pop_result = pop(stack);
+            pop_result = token_stack_pop(stack);
         }
 
         free(parenthesis.value);
@@ -73,10 +74,10 @@ static void handle_parenthesis(struct parser_result *parser_result,
 struct parser_result *parse(char *input) {
     struct tokenizer_result *tokenizer_result = tokenize_input(input);
     struct parser_result *parser_result;
-    struct stack_action_result pop_result;
-    struct stack stack;
+    struct token_stack_action_result pop_result;
+    struct token_stack stack;
 
-    stack_init(&stack);
+    token_stack_init(&stack);
 
     parser_result =
         (struct parser_result *)malloc(sizeof(struct parser_result));
@@ -95,15 +96,15 @@ struct parser_result *parse(char *input) {
         }
     }
 
-    pop_result = pop(&stack);
+    pop_result = token_stack_pop(&stack);
     while (pop_result.error == 0) {
         push_token(parser_result, pop_result.data);
-        pop_result = pop(&stack);
+        pop_result = token_stack_pop(&stack);
     }
 
     free(tokenizer_result->tokens);
     free(tokenizer_result);
-    clear_stack(&stack);
+    token_stack_clear_stack(&stack);
 
     return parser_result;
 }
