@@ -49,14 +49,14 @@ static void handle_operator(struct parser_result *parser_result,
         peek_result = token_stack_peek(stack);
     }
 
-    token_stack_push(stack, operator, NULL);
+    token_stack_push(stack, operator);
 }
 
 static void handle_parenthesis(struct parser_result *parser_result,
                                struct token_stack *stack,
                                struct token parenthesis) {
     if (parenthesis.value[0] == '(') {
-        token_stack_push(stack, parenthesis, NULL);
+        token_stack_push(stack, parenthesis);
     } else {
         struct token_stack_action_result pop_result = token_stack_pop(stack);
 
@@ -67,7 +67,12 @@ static void handle_parenthesis(struct parser_result *parser_result,
         }
 
         free(parenthesis.value);
-        free(pop_result.data.value);
+
+        if (token_stack_is_empty(stack) == 1) {
+            parser_result->status = PARSER_MISSING_PARENTHESIS;
+        }
+
+        if (pop_result.error == 0) free(pop_result.data.value);
     }
 }
 
@@ -84,6 +89,7 @@ struct parser_result *parse(char *input) {
     parser_result->tokens = (struct token *)malloc(tokenizer_result->quantity *
                                                    sizeof(struct token));
     parser_result->quantity = 0;
+    parser_result->status = PARSER_SUCCESS;
 
     for (int i = 0; i < tokenizer_result->quantity; i++) {
         if (tokenizer_result->tokens[i].type == NUMBER) {

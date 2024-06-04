@@ -62,8 +62,11 @@ static void make_operator(struct tokenizer_result* tokenizer_result,
             if (*idx_input - 1 >= 0 && is_digit(input[*idx_input - 1]) ||
                 input[*idx_input - 1] == ')') {
                 token.value[0] = '-';
-            } else {
+            } else if (*idx_input + 1 < input_len &&
+                       is_digit(input[*idx_input + 1])) {
                 token.value[0] = '#';
+            } else {
+                token.value[0] = '-';
             }
             break;
         }

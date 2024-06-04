@@ -20,14 +20,12 @@
         s->size = 0;                                                     \
         s->node_size = node_size;                                        \
     }                                                                    \
-    void label##_stack_push(struct label##_stack *stack, type data,      \
-                            void(onerror)(void)) {                       \
+    void label##_stack_push(struct label##_stack *stack, type data) {    \
         struct label##_stack_node *node =                                \
             (struct label##_stack_node *)malloc(stack->node_size);       \
         node->next = NULL;                                               \
                                                                          \
         if (node == NULL) {                                              \
-            if (onerror != NULL) onerror();                              \
             return;                                                      \
         }                                                                \
                                                                          \
