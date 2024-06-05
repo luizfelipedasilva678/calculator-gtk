@@ -17,7 +17,7 @@ static void calculate_result(GtkWidget *widget, gpointer data) {
     char result_string[32];
 
     if (result.status == EVALUATOR_SUCCESS) {
-        snprintf(result_string, 32, "%.0f", result.value);
+        snprintf(result_string, 32, "%0.f", result.value);
         gtk_entry_buffer_set_text(buffer, result_string, -1);
     } else {
         gtk_entry_buffer_set_text(buffer, "Something went wrong", -1);
@@ -44,14 +44,14 @@ static void create_result_button(GtkGrid *grid) {
     GtkWidget *button;
     button = gtk_button_new_with_label("=");
     g_signal_connect(button, "clicked", G_CALLBACK(calculate_result), NULL);
-    gtk_grid_attach(GTK_GRID(grid), button, 3, 4, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), button, 3, 5, 1, 1);
 }
 
 static void create_delete_button(GtkGrid *grid) {
     GtkWidget *button;
     button = gtk_button_new_from_icon_name("edit-delete");
     g_signal_connect(button, "clicked", G_CALLBACK(delete_entry), NULL);
-    gtk_grid_attach(GTK_GRID(grid), button, 2, 5, 2, 1);
+    gtk_grid_attach(GTK_GRID(grid), button, 2, 5, 1, 1);
 }
 
 static void activate(GtkApplication *app, gpointer user_data) {
@@ -77,16 +77,21 @@ static void activate(GtkApplication *app, gpointer user_data) {
     create_button(GTK_GRID(grid), "8", 1, 1, 1, 1);
     create_button(GTK_GRID(grid), "9", 2, 1, 1, 1);
     create_button(GTK_GRID(grid), "*", 3, 1, 1, 1);
+
     create_button(GTK_GRID(grid), "4", 0, 2, 1, 1);
     create_button(GTK_GRID(grid), "5", 1, 2, 1, 1);
     create_button(GTK_GRID(grid), "6", 2, 2, 1, 1);
     create_button(GTK_GRID(grid), "-", 3, 2, 1, 1);
+
     create_button(GTK_GRID(grid), "1", 0, 3, 1, 1);
     create_button(GTK_GRID(grid), "2", 1, 3, 1, 1);
     create_button(GTK_GRID(grid), "3", 2, 3, 1, 1);
     create_button(GTK_GRID(grid), "+", 3, 3, 1, 1);
+
     create_button(GTK_GRID(grid), "0", 0, 4, 2, 1);
     create_button(GTK_GRID(grid), ".", 2, 4, 1, 1);
+    create_button(GTK_GRID(grid), "/", 3, 4, 1, 1);
+
     create_button(GTK_GRID(grid), "(", 0, 5, 1, 1);
     create_button(GTK_GRID(grid), ")", 1, 5, 1, 1);
     create_result_button(GTK_GRID(grid));

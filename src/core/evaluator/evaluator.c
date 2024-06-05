@@ -64,6 +64,7 @@ struct evaluation_result evaluate(const char *input) {
     struct evaluation_result result;
     struct double_stack stack;
     struct double_stack_action_result pop_result;
+    double number;
 
     result.status = EVALUATOR_SUCCESS;
     result.value = 0;
@@ -88,8 +89,8 @@ struct evaluation_result evaluate(const char *input) {
 
     for (int i = 0; i < parser_result->quantity; i++) {
         if (parser_result->tokens[i].type == NUMBER) {
-            double_stack_push(&stack,
-                              strtod(parser_result->tokens[i].value, NULL));
+            number = strtod(parser_result->tokens[i].value, NULL);
+            double_stack_push(&stack, number);
             free(parser_result->tokens[i].value);
             continue;
         }
