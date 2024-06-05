@@ -19,6 +19,6 @@ struct tokenizer_result {
     size_t quantity;
 };
 
-struct tokenizer_result *tokenize_input(char *input);
+struct tokenizer_result *tokenize_input(const char *input);
 
 #endif

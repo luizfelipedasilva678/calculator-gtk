@@ -1,8 +1,6 @@
 #ifndef __PARSER_H__
 #define __PARSER_H__
 
-#include "../lexer/lexer.h"
-
 #define LEFT_ASSOCIATIVITY 0
 #define RIGHT_ASSOCIATIVITY 1
 
@@ -22,6 +20,6 @@ struct parser_result {
     enum parser_result_status status;
 };
 
-struct parser_result *parse(char *input);
+struct parser_result *parse(const char *input);
 
 #endif

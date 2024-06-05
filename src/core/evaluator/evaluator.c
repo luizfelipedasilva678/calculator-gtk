@@ -1,11 +1,11 @@
 #include <stdio.h>
 #include <math.h>
-#include "../parser/parser.h"
 #include "../lexer/lexer.h"
+#include "../parser/parser.h"
 #include "../data-structures/stack/stack.h"
 #include "evaluator.h"
 
-STACK(double, double);
+STACK(double, double)
 
 static void handle_operator(struct double_stack *stack, struct token operator,
                             struct evaluation_result * result) {
@@ -59,7 +59,7 @@ static void handle_operator(struct double_stack *stack, struct token operator,
     free(operator.value);
 }
 
-struct evaluation_result evaluate(char *input) {
+struct evaluation_result evaluate(const char *input) {
     struct parser_result *parser_result = parse(input);
     struct evaluation_result result;
     struct double_stack stack;

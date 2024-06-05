@@ -12,6 +12,6 @@ struct evaluation_result {
     enum evaluation_status status;
 };
 
-struct evaluation_result evaluate(char *input);
+struct evaluation_result evaluate(const char *input);
 
 #endif

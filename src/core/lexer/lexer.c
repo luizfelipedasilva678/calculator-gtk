@@ -59,8 +59,8 @@ static void make_operator(struct tokenizer_result* tokenizer_result,
             break;
         }
         case '-': {
-            if (*idx_input - 1 >= 0 && is_digit(input[*idx_input - 1]) ||
-                input[*idx_input - 1] == ')') {
+            if (*idx_input - 1 >= 0 && (is_digit(input[*idx_input - 1]) ||
+                                        input[*idx_input - 1] == ')')) {
                 token.value[0] = '-';
             } else if (*idx_input + 1 < input_len &&
                        is_digit(input[*idx_input + 1])) {
@@ -138,9 +138,10 @@ static void tokenize(struct tokenizer_result* tokenizer_result, char* input) {
     }
 }
 
-static char* remove_whitespaces(char* input) {
+static char* remove_whitespaces(const char* input) {
     size_t length = strlen(input);
-    char *new_input, *ptr1, *ptr2;
+    char *new_input, *ptr2;
+    const char* ptr1;
 
     new_input = (char*)malloc(length * sizeof(char) + 1);
     ptr1 = input;
@@ -158,7 +159,7 @@ static char* remove_whitespaces(char* input) {
     return new_input;
 }
 
-struct tokenizer_result* tokenize_input(char* input) {
+struct tokenizer_result* tokenize_input(const char* input) {
     size_t length;
     char* clean_input;
     struct tokenizer_result* tokenizer_result =

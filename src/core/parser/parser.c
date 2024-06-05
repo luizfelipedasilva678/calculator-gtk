@@ -3,7 +3,7 @@
 #include "../lexer/lexer.h"
 #include "../data-structures/stack/stack.h"
 
-STACK(token, struct token);
+STACK(token, struct token)
 
 static uint8_t operator_precedence(char operator) {
     if (operator== '+' || operator== '-') {
@@ -76,7 +76,7 @@ static void handle_parenthesis(struct parser_result *parser_result,
     }
 }
 
-struct parser_result *parse(char *input) {
+struct parser_result *parse(const char *input) {
     struct tokenizer_result *tokenizer_result = tokenize_input(input);
     struct parser_result *parser_result;
     struct token_stack_action_result pop_result;
